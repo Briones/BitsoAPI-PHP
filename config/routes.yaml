@@ -1,0 +1,27 @@
+index:
+    path: /
+    defaults: { _controller: 'App\Controller\DefaultController::index' }
+
+orderBook:
+    path: /available-books
+    defaults: { _controller: 'App\Controller\DefaultController::getAvailableBooksAction' }
+
+recentTrades:
+    path: /trades
+    defaults: { _controller: 'App\Controller\DefaultController::getRecentTrades' }
+
+accountStatus:
+    path: /account-status
+    defaults: { _controller: 'App\Controller\DefaultController::getAccountStatus' }
+
+fees:
+    path: /fees
+    defaults: { _controller: 'App\Controller\DefaultController::getFees' }
+
+ledger:
+    path: /ledger
+    defaults: { _controller: 'App\Controller\DefaultController::getLedger' }
+
+orders:
+    path: /orders
+    defaults: { _controller: 'App\Controller\DefaultController::placeOrder' }
