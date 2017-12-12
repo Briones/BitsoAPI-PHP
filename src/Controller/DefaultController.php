@@ -4,7 +4,6 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Entity\BitsoPrivateApi;
-use App\Exception\BitsoException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Entity\BitsoPublicApi;
@@ -27,37 +26,48 @@ class DefaultController
         $this->bitsoPrivateApi = $bitsoPrivateApi;
     }
 
-    public function index() {
-        return new Response(json_encode($this->bitsoPublicApi->getTicker(['book'=>'btc_mxn'])));
+    public function index()
+    {
+        return new Response(json_encode($this->bitsoPublicApi->getTicker(['book' => 'btc_mxn'])));
     }
 
-    public function getAvailableBooksAction() {
-        return new Response(json_encode($this->bitsoPublicApi->getAvailableBooks(["book"=>"btc_mxn","aggregate"=> "true"])));
+    public function getAvailableBooksAction()
+    {
+        return new Response(json_encode($this->bitsoPublicApi->getAvailableBooks(["book" => "btc_mxn", "aggregate" => "true"])));
     }
 
-    public function getRecentTrades() {
-        return new Response(json_encode($this->bitsoPublicApi->getTrades(['book'=>'btc_mxn', 'limit' => '2'])));
+    public function getRecentTrades()
+    {
+        return new Response(json_encode($this->bitsoPublicApi->getTrades(['book' => 'btc_mxn', 'limit' => '2'])));
     }
 
-    public function getAccountStatus() {
+    public function getAccountStatus()
+    {
         return new Response(json_encode($this->bitsoPrivateApi->getAccountStatus()));
     }
 
-    public function getFees() {
+    public function getFees()
+    {
         return new Response(json_encode($this->bitsoPrivateApi->getFees()));
     }
 
-    public function getLedger() {
-        return new Response(json_encode($this->bitsoPrivateApi->getLedger(["limit"=>"15"])));
+    public function getLedger()
+    {
+        return new Response(json_encode($this->bitsoPrivateApi->getLedger(["limit" => "15"])));
     }
 
-    public function placeOrder(Request $request) {
-        try{
-            $trades = $this->bitsoPublicApi->makePrivateRequest('orders/', 'POST', $request->request->all());
-        } catch (BitsoException $exception){
-            return new Response('Algo salió mal :' .$exception->getMessage() );
-        }
+    public function getWithdrawals()
+    {
+        return new Response(json_encode($this->bitsoPrivateApi->getWithdrawals(["limit" => "20", "wids" => "ids"])));
+    }
 
-        return new Response(\GuzzleHttp\json_encode($trades));
+    public function getFundings()
+    {
+        return new Response(json_encode($this->bitsoPrivateApi->getFundings(["fids" => "89e9e7807058d56b056b9dae42a5b643,ccacc3dafa18dffe0cc650e33b812f85"])));
+    }
+
+    public function placeOrder(Request $request)
+    {
+        return new Response(json_encode($this->bitsoPrivateApi->placeOrder($request->request->all())));
     }
 }

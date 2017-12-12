@@ -36,7 +36,7 @@ class BitsoPrivateApi
         'POST',
     ];
 
-    public function __construct(string $key='', string $secret = '', ClientInterface $client)
+    public function __construct(string $key = '', string $secret = '', ClientInterface $client)
     {
         $this->key = $key;
         $this->secret = $secret;
@@ -47,7 +47,7 @@ class BitsoPrivateApi
     /**
      * @throws BitsoException
      */
-    public function request(string $url, string $method = 'GET', array $params = []): array
+    public function request(string $path, string $method = 'GET', array $params = []): array
     {
         if (!in_array($method, $this::ALLOWED_METHODS)) {
             throw new MethodNotAllowedException($this::ALLOWED_METHODS);
@@ -60,11 +60,12 @@ class BitsoPrivateApi
             $headers['Content-Type'] = 'application/json';
         }
 
-        $authHeader = $this->createAuthenticationHeader($url,$method, $payload, $params);
+        $apiPath = $this->parseApiPath($method, $path, $params);
+        $authHeader = $this->createAuthenticationHeader($apiPath, $method, $payload);
         $headers['Authorization'] = $authHeader;
 
         try {
-            $response = $this->client->request($method, $url, ['query' => $params, 'headers' => $headers, 'body' => $payload, 'debug' => false]);
+            $response = $this->client->request($method, $path, ['query' => $params, 'headers' => $headers, 'body' => $payload, 'debug' => false]);
         } catch (GuzzleException $exception) {
             throw new BitsoException($exception->getMessage());
         }
@@ -76,44 +77,97 @@ class BitsoPrivateApi
 
     private function getNonceTimestamp(): float
     {
-        $time = round(microtime(true)*1000);
+        $time = round(microtime(true) * 1000);
         return $time;
     }
 
-    private function createAuthenticationHeader(string $url, string $method, string $payload, array $params): string {
-        $path = parse_url($this->client->getConfig('base_uri').$url)['path'];
+    private function parseApiPath(string $method, string &$path, array &$params)
+    {
+        $parsedUrl = parse_url($this->client->getConfig('base_uri') . $path);
+        $apiPath = $parsedUrl['path'];
 
-        if ($method == 'GET' && !empty($params)) {
-            $path .= '?' . http_build_query($params);
+        if (isset($params['extra'])) {
+            $paramsExtra = str_replace(',', '-', $params['extra']);
+            unset($params['extra']);
+            $path .= '/' . $paramsExtra;
+            $apiPath .= '/' . $paramsExtra;
         }
 
+        if ($method == 'GET' && !empty($params)) {
+            $apiPath .= '?' . http_build_query($params);
+        }
+
+        return $apiPath;
+    }
+
+    private function createAuthenticationHeader(string $apiPath, string $method, string $payload): string
+    {
         $nonce = $this->getNonceTimestamp();
-        $message = sprintf('%s%s%s%s', $nonce , $method , $path , $payload);
+        $message = sprintf('%s%s%s%s', $nonce, $method, $apiPath, $payload);
         $signature = hash_hmac('sha256', $message, $this->secret);
 
         return sprintf('Bitso %s:%s:%s', $this->key, $nonce, $signature);
     }
 
-    public function getAccountStatus(array $params = []): array{
+    public function getAccountStatus(array $params = []): array
+    {
         try {
             return $this->request('account_status', 'GET', $params);
-        } catch (BitsoException | MethodNotAllowedException $exception){
+        } catch (BitsoException | MethodNotAllowedException $exception) {
             return ['error' => $exception->getMessage()];
         }
     }
 
-    public function getFees(array $params = []): array{
+    public function getFees(array $params = []): array
+    {
         try {
-           return $this->request('fees', 'GET', $params);
-        } catch (BitsoException | MethodNotAllowedException $exception){
+            return $this->request('fees', 'GET', $params);
+        } catch (BitsoException | MethodNotAllowedException $exception) {
             return ['error' => $exception->getMessage()];
         }
     }
 
-    public function getLedger(array $params = []): array{
+    public function getLedger(array $params = []): array
+    {
         try {
             return $this->request('ledger', 'GET', $params);
-        } catch (BitsoException | MethodNotAllowedException $exception){
+        } catch (BitsoException | MethodNotAllowedException $exception) {
+            return ['error' => $exception->getMessage()];
+        }
+    }
+
+    public function getWithdrawals(array $params = []): array
+    {
+        if (isset($params['wids'])) {
+            $params['extra'] = $params['wids'];
+            unset($params['wids']);
+        }
+
+        try {
+            return $this->request('withdrawals', 'GET', $params);
+        } catch (BitsoException | MethodNotAllowedException $exception) {
+            return ['error' => $exception->getMessage()];
+        }
+    }
+
+    public function getFundings(array $params = []): array
+    {
+        if (isset($params['fids'])) {
+            $params['extra'] = $params['fids'];
+            unset($params['fids']);
+        }
+        try {
+            return $this->request('fundings', 'GET', $params);
+        } catch (BitsoException | MethodNotAllowedException $exception) {
+            return ['error' => $exception->getMessage()];
+        }
+    }
+
+    public function placeOrder(array $params = []): array
+    {
+        try {
+            return $this->request('orders', 'POST', $params);
+        } catch (BitsoException | MethodNotAllowedException $exception) {
             return ['error' => $exception->getMessage()];
         }
     }

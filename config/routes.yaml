@@ -22,6 +22,14 @@ ledger:
     path: /ledger
     defaults: { _controller: 'App\Controller\DefaultController::getLedger' }
 
+withdrawals:
+    path: /withdrawals
+    defaults: { _controller: 'App\Controller\DefaultController::getWithdrawals' }
+
+fundings:
+    path: /fundings
+    defaults: { _controller: 'App\Controller\DefaultController::getFundings' }
+
 orders:
     path: /orders
     defaults: { _controller: 'App\Controller\DefaultController::placeOrder' }
