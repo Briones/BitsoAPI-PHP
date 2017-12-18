@@ -64,7 +64,7 @@ class BitsoPublicApiTest extends TestCase
         $this->assertEquals($mockedResponse['payload'], $actualResponse);
     }
 
-    public function testGetsOrderBooks()
+    public function testGetsOrderBook()
     {
         $mockedResponse = [
            'success' => true,
@@ -105,6 +105,35 @@ class BitsoPublicApiTest extends TestCase
 
         $bitsoPublicApi = new BitsoPublicApi($this->createMockClient(json_encode($mockedResponse)));
         $actualResponse = $bitsoPublicApi->getOrderBook(['book'=>'btc_mxn','aggregate'=> 'true']);
+        $this->assertEquals($mockedResponse['payload'], $actualResponse);
+    }
+
+    public function testGetsPublicTrades()
+    {
+        $mockedResponse = [
+            'success' => true,
+            'payload' => [
+                [
+                    'book' => 'btc_mxn',
+                    'created_at' => '2016-04-08T17 =>52 =>31.000+00 =>00',
+                    'amount' => '0.02000000',
+                    'maker_side' => 'buy',
+                    'price' => '5545.01',
+                    'tid' => 55845,
+                ],
+                [
+                    'book' => 'btc_mxn',
+                    'created_at' => '2016-04-08T17 =>52 =>31.000+00 =>00',
+                    'amount' => '0.33723939',
+                    'maker_side' => 'sell',
+                    'price' => '5633.98',
+                    'tid' => 55844,
+                ],
+            ],
+        ];
+
+        $bitsoPublicApi = new BitsoPublicApi($this->createMockClient(json_encode($mockedResponse)));
+        $actualResponse = $bitsoPublicApi->getTrades(['book'=>'btc_mxn']);
         $this->assertEquals($mockedResponse['payload'], $actualResponse);
     }
 
