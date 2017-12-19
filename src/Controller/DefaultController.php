@@ -28,46 +28,46 @@ class DefaultController
 
     public function index()
     {
-        return new Response(json_encode($this->bitsoPublicApi->getTicker(['book' => 'btc_mxn'])));
+        return new Response($this->bitsoPublicApi->getTicker(['book' => 'btc_mxn']));
     }
 
     public function getAvailableBooksAction()
     {
-        return new Response(json_encode($this->bitsoPublicApi->getAvailableBooks(["book" => "btc_mxn", "aggregate" => "true"])));
+        return new Response($this->bitsoPublicApi->getAvailableBooks(["book" => "btc_mxn", "aggregate" => "true"]));
     }
 
     public function getRecentTrades()
     {
-        return new Response(json_encode($this->bitsoPublicApi->getTrades(['book' => 'btc_mxn', 'limit' => '2'])));
+        return new Response($this->bitsoPublicApi->getTrades(['book' => 'btc_mxn', 'limit' => '2']));
     }
 
     public function getAccountStatus()
     {
-        return new Response(json_encode($this->bitsoPrivateApi->getAccountStatus()));
+        return new Response($this->bitsoPrivateApi->getAccountStatus());
     }
 
     public function getFees()
     {
-        return new Response(json_encode($this->bitsoPrivateApi->getFees()));
+        return new Response($this->bitsoPrivateApi->getFees());
     }
 
     public function getLedger()
     {
-        return new Response(json_encode($this->bitsoPrivateApi->getLedger(["limit" => "15"])));
+        return new Response($this->bitsoPrivateApi->getLedger(["limit" => "15"]));
     }
 
     public function getWithdrawals()
     {
-        return new Response(json_encode($this->bitsoPrivateApi->getWithdrawals(["limit" => "20", "wids" => "ids"])));
+        return new Response($this->bitsoPrivateApi->getWithdrawals(["limit" => "20", "wids" => "ids"]));
     }
 
     public function getFundings()
     {
-        return new Response(json_encode($this->bitsoPrivateApi->getFundings(["fids" => "89e9e7807058d56b056b9dae42a5b643,ccacc3dafa18dffe0cc650e33b812f85"])));
+        return new Response($this->bitsoPrivateApi->getFundings(["fids" => "89e9e7807058d56b056b9dae42a5b643,ccacc3dafa18dffe0cc650e33b812f85"]));
     }
 
     public function placeOrder(Request $request)
     {
-        return new Response(json_encode($this->bitsoPrivateApi->placeOrder($request->request->all())));
+        return new Response($this->bitsoPrivateApi->placeOrder($request->request->all()));
     }
 }

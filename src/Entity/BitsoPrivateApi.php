@@ -5,7 +5,7 @@ namespace App\Entity;
 
 use App\Exception\BitsoException;
 use GuzzleHttp\ClientInterface;
-use GuzzleHttp\Exception\GuzzleException;
+use GuzzleHttp\Exception\BadResponseException;
 use Symfony\Component\Routing\Exception\MethodNotAllowedException;
 
 class BitsoPrivateApi
@@ -47,7 +47,7 @@ class BitsoPrivateApi
     /**
      * @throws BitsoException
      */
-    public function request(string $path, string $method = 'GET', array $params = []): array
+    public function request(string $path, string $method = 'GET', array $params = []): string
     {
         if (!in_array($method, $this::ALLOWED_METHODS)) {
             throw new MethodNotAllowedException($this::ALLOWED_METHODS);
@@ -58,6 +58,7 @@ class BitsoPrivateApi
         if (!empty($params) && $method == 'POST') {
             $payload = json_encode($params);
             $headers['Content-Type'] = 'application/json';
+            $params = [];
         }
 
         $apiPath = $this->parseApiPath($method, $path, $params);
@@ -65,14 +66,16 @@ class BitsoPrivateApi
         $headers['Authorization'] = $authHeader;
 
         try {
-            $response = $this->client->request($method, $path, ['query' => $params, 'headers' => $headers, 'body' => $payload, 'debug' => false]);
-        } catch (GuzzleException $exception) {
-            throw new BitsoException($exception->getMessage());
+            $response = $this->client->request($method, $path, ['query' => $params, 'headers' => $headers, 'body' => $payload]);
+        } catch (BadResponseException $exception) {
+            $response = $exception->getResponse();
+            $jsonBody = (string)$response->getBody();
+            throw new BitsoException($jsonBody);
         }
 
         $responseBody = json_decode((string)$response->getBody(), true);
 
-        return $responseBody['payload'];
+        return json_encode($responseBody['payload']);
     }
 
     private function getNonceTimestamp(): float
@@ -109,34 +112,34 @@ class BitsoPrivateApi
         return sprintf('Bitso %s:%s:%s', $this->key, $nonce, $signature);
     }
 
-    public function getAccountStatus(array $params = []): array
+    public function getAccountStatus(array $params = []): string
     {
         try {
             return $this->request('account_status', 'GET', $params);
         } catch (BitsoException | MethodNotAllowedException $exception) {
-            return ['error' => $exception->getMessage()];
+            return $exception->getMessage();
         }
     }
 
-    public function getFees(array $params = []): array
+    public function getFees(array $params = []): string
     {
         try {
-            return $this->request('fees', 'GET', $params);
+            return json_encode($this->request('fees', 'GET', $params));
         } catch (BitsoException | MethodNotAllowedException $exception) {
-            return ['error' => $exception->getMessage()];
+            return $exception->getMessage();
         }
     }
 
-    public function getLedger(array $params = []): array
+    public function getLedger(array $params = []): string
     {
         try {
             return $this->request('ledger', 'GET', $params);
         } catch (BitsoException | MethodNotAllowedException $exception) {
-            return ['error' => $exception->getMessage()];
+            return $exception->getMessage();
         }
     }
 
-    public function getWithdrawals(array $params = []): array
+    public function getWithdrawals(array $params = []): string
     {
         if (isset($params['wids'])) {
             $params['extra'] = $params['wids'];
@@ -146,11 +149,11 @@ class BitsoPrivateApi
         try {
             return $this->request('withdrawals', 'GET', $params);
         } catch (BitsoException | MethodNotAllowedException $exception) {
-            return ['error' => $exception->getMessage()];
+            return $exception->getMessage();
         }
     }
 
-    public function getFundings(array $params = []): array
+    public function getFundings(array $params = []): string
     {
         if (isset($params['fids'])) {
             $params['extra'] = $params['fids'];
@@ -159,16 +162,16 @@ class BitsoPrivateApi
         try {
             return $this->request('fundings', 'GET', $params);
         } catch (BitsoException | MethodNotAllowedException $exception) {
-            return ['error' => $exception->getMessage()];
+            return $exception->getMessage();
         }
     }
 
-    public function placeOrder(array $params = []): array
+    public function placeOrder(array $params = []): string
     {
         try {
             return $this->request('orders', 'POST', $params);
         } catch (BitsoException | MethodNotAllowedException $exception) {
-            return ['error' => $exception->getMessage()];
+            return $exception->getMessage();
         }
     }
 

@@ -32,7 +32,7 @@ class BitsoPublicApiTest extends TestCase
 
         $bitsoPublicApi = new BitsoPublicApi($this->createMockClient(json_encode($mockedResponse)));
         $actualResponse = $bitsoPublicApi->getTicker(['book' => 'btc_mxn']);
-        $this->assertEquals($mockedResponse['payload'], $actualResponse);
+        $this->assertEquals($mockedResponse['payload'], json_decode($actualResponse, true));
     }
 
     public function testGetsAvailableBooks()
@@ -61,51 +61,51 @@ class BitsoPublicApiTest extends TestCase
 
         $bitsoPublicApi = new BitsoPublicApi($this->createMockClient(json_encode($mockedResponse)));
         $actualResponse = $bitsoPublicApi->getAvailableBooks(["book" => "btc_mxn", "aggregate" => "true"]);
-        $this->assertEquals($mockedResponse['payload'], $actualResponse);
+        $this->assertEquals($mockedResponse['payload'], json_decode($actualResponse, true));
     }
 
     public function testGetsOrderBook()
     {
         $mockedResponse = [
-           'success' => true,
-           'payload' => [
-               'asks' => [
+            'success' => true,
+            'payload' => [
+                'asks' => [
                     [
-                       'book' =>'btc_mxn',
-                       'price' =>'5632.24',
-                       'amount' =>'1.34491802'
+                        'book' => 'btc_mxn',
+                        'price' => '5632.24',
+                        'amount' => '1.34491802'
                     ],
                     [
-                       'book' =>'btc_mxn',
-                       'price' =>'5633.44',
-                       'amount' =>'0.4259'
+                        'book' => 'btc_mxn',
+                        'price' => '5633.44',
+                        'amount' => '0.4259'
                     ],
                     [
-                       'book' =>'btc_mxn',
-                       'price' =>'5642.14',
-                       'amount' =>'1.21642'
+                        'book' => 'btc_mxn',
+                        'price' => '5642.14',
+                        'amount' => '1.21642'
                     ]
                 ],
-               'bids' => [
+                'bids' => [
                     [
-                       'book' =>'btc_mxn',
-                       'price' =>'6123.55',
-                       'amount' =>'1.12560000'
+                        'book' => 'btc_mxn',
+                        'price' => '6123.55',
+                        'amount' => '1.12560000'
                     ],
                     [
-                       'book' =>'btc_mxn',
-                       'price' =>'6121.55',
-                       'amount' =>'2.23976'
+                        'book' => 'btc_mxn',
+                        'price' => '6121.55',
+                        'amount' => '2.23976'
                     ]
                 ],
-               'updated_at' =>'2016-04-08T17 =>52 =>31.000+00 =>00',
-               'sequence' =>'27214'
+                'updated_at' => '2016-04-08T17 =>52 =>31.000+00 =>00',
+                'sequence' => '27214'
             ]
         ];
 
         $bitsoPublicApi = new BitsoPublicApi($this->createMockClient(json_encode($mockedResponse)));
-        $actualResponse = $bitsoPublicApi->getOrderBook(['book'=>'btc_mxn','aggregate'=> 'true']);
-        $this->assertEquals($mockedResponse['payload'], $actualResponse);
+        $actualResponse = $bitsoPublicApi->getOrderBook(['book' => 'btc_mxn', 'aggregate' => 'true']);
+        $this->assertEquals($mockedResponse['payload'], json_decode($actualResponse, true));
     }
 
     public function testGetsPublicTrades()
@@ -133,8 +133,8 @@ class BitsoPublicApiTest extends TestCase
         ];
 
         $bitsoPublicApi = new BitsoPublicApi($this->createMockClient(json_encode($mockedResponse)));
-        $actualResponse = $bitsoPublicApi->getTrades(['book'=>'btc_mxn']);
-        $this->assertEquals($mockedResponse['payload'], $actualResponse);
+        $actualResponse = $bitsoPublicApi->getTrades(['book' => 'btc_mxn']);
+        $this->assertEquals($mockedResponse['payload'], json_decode($actualResponse, true));
     }
 
     public function createMockClient(string $body, int $statusCode = 200): Client
