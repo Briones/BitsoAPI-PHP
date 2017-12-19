@@ -46,6 +46,11 @@ class DefaultController
         return new Response($this->bitsoPrivateApi->getAccountStatus());
     }
 
+    public function getBalance()
+    {
+        return new Response($this->bitsoPrivateApi->getBalance());
+    }
+
     public function getFees()
     {
         return new Response($this->bitsoPrivateApi->getFees());

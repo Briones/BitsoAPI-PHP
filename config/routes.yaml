@@ -14,6 +14,10 @@ accountStatus:
     path: /account-status
     defaults: { _controller: 'App\Controller\DefaultController::getAccountStatus' }
 
+balance:
+    path: /balance
+    defaults: { _controller: 'App\Controller\DefaultController::getBalance' }
+
 fees:
     path: /fees
     defaults: { _controller: 'App\Controller\DefaultController::getFees' }

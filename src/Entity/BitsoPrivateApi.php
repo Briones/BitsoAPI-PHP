@@ -121,10 +121,19 @@ class BitsoPrivateApi
         }
     }
 
+    public function getBalance(array $params = []): string
+    {
+        try {
+            return $this->request('balance', 'GET', $params);
+        } catch (BitsoException | MethodNotAllowedException $exception) {
+            return $exception->getMessage();
+        }
+    }
+
     public function getFees(array $params = []): string
     {
         try {
-            return json_encode($this->request('fees', 'GET', $params));
+            return $this->request('fees', 'GET', $params);
         } catch (BitsoException | MethodNotAllowedException $exception) {
             return $exception->getMessage();
         }
