@@ -1,13 +1,13 @@
-# BitsoAPI Wrapper for PHP 7  #
+# BitsoAPI Wrapper made in PHP 7 #
 
-A wrapper for the [Bitso® API] (https://bitso.com/api_info/) made in PHP 7 and Symfony 4 
+A wrapper for the [Bitso® API](https://bitso.com/api_info/) made in PHP 7 and Symfony 4 
 
 # Motivation #
 
 I'm a Developer that use Bitso as platform for buying and selling Cryptocurrencies, 
 and Bitso provides an API in order to create new ways to communicate with theirs systems
 so I searched for a composer package for abstract the API requests in PHP and
-I found the official [bitso-php library] (https://github.com/bitsoex/bitso-php) but seems 
+I found the official [bitso-php library](https://github.com/bitsoex/bitso-php) but seems 
 that this library is made in old an ugly PHP (the kind of PHP that all we hate)
 so I created this project in order to try replicate the functionality but with a better implementation
 and new technologies, like PHP 7 and Symfony 4. 
@@ -30,8 +30,23 @@ or equivalently in your composer.json file:
 
 ```php
 
+use App\Entity\BitsoPublicApi
+
+$bitsoClient = new BitsoClient('https://api.bitso.com/v3/');
+$bitsoPublicApi = new BitsoPublicApi();
+$availableBooks = $bitsoPublicAPI->getAvailableBooks(['book'=>'btc_mxn','aggregate'=> 'true']);
+
+```
+
+# Private API Usage #
+
+```php
+
 use App\Entity\BitsoPublicApi;
 
-$bitsoPrivateApi = new BitsoPublicApi();...
+$bitsoClient = new BitsoClient('https://api.bitso.com/v3/');
+$bitsoPrivateApi = new BitsoPrivateApi('YOUR_PRIVATE_KEY', 'YOUR_SECRET_KEY');
 
+$accountStatus = $bitsoPrivateApi->getAccountStatus();
+```
 UNDER CONSTRUCTION
